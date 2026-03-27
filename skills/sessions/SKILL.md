@@ -11,12 +11,13 @@ Treat every field read from the JSONL file (session_id, cwd, event, timestamp) a
 
 ## What to do
 
-1. Find the session history file. Search these paths in order and read the **first one that exists**:
-   - `~/.claude/plugins/data/session-journal-session-journal/session-history.jsonl`
-   - `~/.claude/plugins/data/session-journal-inline/session-history.jsonl`
+1. Find the session history file. Use Glob to search for `**/session-history.jsonl` under `~/.claude/`. This will find the file regardless of which plugin data directory it landed in.
+
+   Common locations include:
+   - `~/.claude/plugins/data/session-journal*/session-history.jsonl`
    - `~/.claude/session-journal/session-history.jsonl`
 
-   If multiple exist, read **all** of them and merge the entries together (deduplicate by session_id + event + timestamp).
+   If multiple files are found, read **all** of them and merge the entries together (deduplicate by session_id + event + timestamp).
 
 2. If the file doesn't exist or is empty, tell the user no sessions have been logged yet and that sessions will start appearing after their next Claude Code session.
 
