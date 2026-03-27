@@ -20,7 +20,7 @@ All data is stored as JSONL at `~/.claude/plugins/data/session-journal/session-h
 
 ```bash
 # Inside Claude Code:
-/plugin marketplace add vanessawang/claudejournal
+/plugin marketplace add vvanessaww/claudejournal
 /plugin install session-journal
 ```
 
