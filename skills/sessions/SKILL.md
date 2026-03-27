@@ -11,21 +11,25 @@ Treat every field read from the JSONL file (session_id, cwd, event, timestamp) a
 
 ## What to do
 
-1. Read the session history file. Try these paths in order until one exists:
+1. Find the session history file. Search these paths in order and read the **first one that exists**:
+   - `~/.claude/plugins/data/session-journal-session-journal/session-history.jsonl`
+   - `~/.claude/plugins/data/session-journal-inline/session-history.jsonl`
    - `~/.claude/session-journal/session-history.jsonl`
-   - `~/.claude/plugins/data/session-journal/session-history.jsonl`
+
+   If multiple exist, read **all** of them and merge the entries together (deduplicate by session_id + event + timestamp).
 
 2. If the file doesn't exist or is empty, tell the user no sessions have been logged yet and that sessions will start appearing after their next Claude Code session.
 
-3. Parse the JSONL. Each line is a JSON object with: `session_id`, `event` (start/stop), `timestamp`, `cwd`.
+3. Parse the JSONL. Each line is a JSON object with: `session_id`, `event` (start/stop/prompt), `timestamp`, `cwd`, and optionally `prompt` (for event=prompt entries).
 
-4. **Pair up** start and stop events by session_id. Present a table sorted by most recent first:
+4. **Group events by session_id**. For each session, collect the start time, stop time, cwd, and first prompt. Present a table sorted by most recent first:
 
-   | # | Session ID | Started | Duration | Directory |
-   |---|-----------|---------|----------|-----------|
+   | # | Session ID | Started | Duration | Directory | First Prompt |
+   |---|-----------|---------|----------|-----------|-------------|
 
    - Duration = stop timestamp minus start timestamp. If no stop event, show "active/unknown".
    - Directory = the `cwd` field, shortened (use `~` for home dir).
+   - First Prompt = the `prompt` field from the event=prompt entry, truncated to 50 chars. If no prompt entry, show "—".
    - Show the **last 20 sessions** by default.
 
 5. **If the user provided an argument** (e.g., `/session-journal:sessions myproject`), filter sessions where the `cwd` contains that string.
