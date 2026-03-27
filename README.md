@@ -74,6 +74,23 @@ Each line in the JSONL file looks like:
 {"session_id":"abc-123","event":"stop","timestamp":"2026-03-25T15:15:00Z","cwd":"/Users/you/myproject"}
 ```
 
+## How is this different from `/resume`?
+
+Claude Code has a built-in `/resume` command that shows recent sessions. So why do you need this?
+
+| | `/resume` (built-in) | `session-journal` (this plugin) |
+|---|---|---|
+| Needs session ID upfront | Shows recent list | Full searchable history |
+| Survives terminal crash/close | Transcript may be lost | Log entry written at session start |
+| Searchable by project directory | No | Yes (`/session-journal:sessions myproject`) |
+| Tracks session duration | No | Yes (start + stop timestamps) |
+| Survives transcript cleanup | No (respects `cleanupPeriodDays`) | Yes (independent log file) |
+| Data format | Opaque internal transcripts | Human-readable JSONL you own |
+
+**`/resume` is the mechanism to go back. `session-journal` is the index that tells you where to go back *to*.**
+
+Without this plugin, you're relying on memory or scrolling terminal history to find a session ID. With it, you can grep by project, date, or just scan recent sessions.
+
 ## Requirements
 
 - Claude Code CLI

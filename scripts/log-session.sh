@@ -5,15 +5,36 @@
 
 set -euo pipefail
 
+# Validate event type against allowlist
 EVENT="${1:-unknown}"
-LOG_DIR="${CLAUDE_PLUGIN_DATA:-$HOME/.claude/plugins/data/session-journal}"
+case "$EVENT" in
+  start|stop) ;;
+  *) EVENT="unknown" ;;
+esac
+
+LOG_DIR="${CLAUDE_PLUGIN_DATA:-$HOME/.claude/session-journal}"
 LOG_FILE="${LOG_DIR}/session-history.jsonl"
 
+# Create log directory with restrictive permissions
 mkdir -p "$LOG_DIR"
+chmod 700 "$LOG_DIR"
 
-jq -c -r \
-  --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
-  --arg cwd "$PWD" \
+# Cap stdin to 4KB to prevent memory exhaustion
+INPUT="$(head -c 4096)"
+
+# Extract session_id safely via jq, falling back to "unknown"
+SESSION_ID="$(jq -r '.session_id // "unknown"' <<< "$INPUT" 2>/dev/null || echo "unknown")"
+
+TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+# Build JSON safely using jq (prevents injection via session_id or cwd)
+jq -cn \
+  --arg session_id "$SESSION_ID" \
   --arg event "$EVENT" \
-  '{session_id: .session_id, event: $event, timestamp: $ts, cwd: $cwd}' \
+  --arg timestamp "$TIMESTAMP" \
+  --arg cwd "$PWD" \
+  '{session_id:$session_id,event:$event,timestamp:$timestamp,cwd:$cwd}' \
   >> "$LOG_FILE"
+
+# Ensure log file is only readable by owner
+chmod 600 "$LOG_FILE"
