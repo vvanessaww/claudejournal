@@ -9,7 +9,7 @@
       "name": "session-journal",
       "source": "./",
       "description": "Automatically logs every Claude Code session ID so you never lose a conversation. Includes /session-journal:sessions to browse and resume past sessions.",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   ]
 }

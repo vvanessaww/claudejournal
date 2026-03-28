@@ -1,6 +1,6 @@
 {
   "name": "session-journal",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Automatically logs every Claude Code session ID, timestamp, and working directory so you never lose a conversation. Includes a /sessions slash command to browse and resume past sessions.",
   "author": {
     "name": "Vanessa Wang"
