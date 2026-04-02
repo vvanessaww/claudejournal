@@ -42,10 +42,13 @@ Type inside Claude Code:
 
 This shows a table of your recent sessions sorted newest-first:
 
-| # | Session ID | Started | Duration | Directory |
-|---|-----------|---------|----------|-----------|
-| 1 | abc-123   | 2026-03-25 14:30 | 45m | ~/myproject |
-| 2 | def-456   | 2026-03-25 10:15 | 1h 20m | ~/work/api |
+```
+ #  Session ID       Started              Duration  Directory            First Prompt
+ 1  a1b2c3d4e5f6...  2026-03-28 22:53     45m       ~/myproject          help me set up auth...
+ 2  f7e8d9c0b1a2...  2026-03-28 18:10     1h 20m    ~/work/api           fix the rate limiti...
+ 3  d4c3b2a1e5f6...  2026-03-27 14:30     2h 5m     ~/side-project       add dark mode toggle
+ 4  b9a8c7d6e5f4...  2026-03-27 09:00     active     ~/work/api           —
+```
 
 ### Filter by project
 
@@ -94,7 +97,30 @@ Without this plugin, you're relying on memory or scrolling terminal history to f
 ## Requirements
 
 - Claude Code CLI
-- `jq` (used by the logging script)
+- `jq` (used by the logging scripts for safe JSON construction)
+
+## Troubleshooting
+
+**No sessions showing up?**
+Sessions are logged by hooks that fire on SessionStart/Stop. If you just installed the plugin, you won't see any history yet -- start a new Claude Code session and it'll appear.
+
+**`jq: command not found`**
+The logging scripts use `jq` to safely construct JSON (prevents injection via malformed session IDs). Install it:
+- macOS: `brew install jq`
+- Ubuntu/Debian: `sudo apt install jq`
+- Other: [stedolan.github.io/jq/download](https://stedolan.github.io/jq/download/)
+
+**Log file location**
+The JSONL file lives at `~/.claude/session-journal/session-history.jsonl` by default, or under `$CLAUDE_PLUGIN_DATA` if that's set. The `/session-journal:sessions` command uses glob to find it regardless of exact path.
+
+**Permission errors**
+The scripts create the log directory with `700` and the log file with `600` permissions (owner-only). If you're getting permission errors, check that `~/.claude/` is owned by your user.
+
+## Tests
+
+```bash
+bash tests/test-log-session.sh
+```
 
 ## License
 
