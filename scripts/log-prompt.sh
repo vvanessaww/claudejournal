@@ -17,7 +17,7 @@ INPUT="$(head -c 4096)"
 SESSION_ID="$(jq -r '.session_id // "unknown"' <<< "$INPUT" 2>/dev/null || echo "unknown")"
 
 # Only log the first prompt per session (skip if we already have one)
-if grep -q "\"session_id\":\"${SESSION_ID}\".*\"event\":\"prompt\"" "$LOG_FILE" 2>/dev/null; then
+if grep -F "\"session_id\":\"${SESSION_ID}\"" "$LOG_FILE" 2>/dev/null | grep -qF "\"event\":\"prompt\""; then
   exit 0
 fi
 
