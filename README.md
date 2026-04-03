@@ -2,9 +2,15 @@
 
 A Claude Code plugin that automatically logs every session ID, timestamp, and working directory so you never lose a conversation.
 
-## The problem
+## Why this exists
 
-When you close Claude Code (especially without Ctrl-C), the session ID disappears. If you didn't note it down, that conversation is gone. This plugin silently records every session so you can always go back.
+I was deep in a coding session with Claude Code when my terminal crashed. Twenty minutes of scrolling through terminal history later, I still couldn't find the session ID. The conversation - the context, the decisions, the code we'd written together - was just gone.
+
+Claude Code has a built-in `/resume` command, but it only works if you already have the session ID. It's the mechanism to go back - but it doesn't help you figure out *where* to go back to. There's no index, no search, no way to browse your history by project or date.
+
+session-journal fixes that. It hooks into Claude Code's lifecycle events, silently logging every session ID, timestamp, working directory, and your first prompt. When you need to find a conversation, `/session-journal:sessions` gives you a searchable table of everything. Filter by project, see how long each session lasted, and resume with one command.
+
+Will Anthropic build this into Claude Code eventually? Probably. Session persistence feels like an obvious first-class feature. But it doesn't exist yet, and I needed it now - so I built it in a weekend and shipped it to the marketplace. Sometimes the best way to make a product case is to just build the thing.
 
 ## What it does
 
